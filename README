@@ -1,0 +1,113 @@
+Approach: To make CRUD operations and the search faster, i am using nested hashMaps approach. 
+The catalog consists of varied Items stored. Each item Object constitutes multiple SKUs ; each SKU attribute in turn has basic value/keyword associated and is represented as string. 
+The SKU attribute maps to -> value/keyword-> maps to Id of item whose value is Item itself. 
+
+An example would be->
+	Item {title,category,size,color,brand}
+
+	title,brand etc represent SKU categories. Brand=Nike represents a keyword. 
+
+	All the SKUs (that have to be made searchable) are fetched from the application.properties, like "skus=Title,Brand,Color,Size,Category".
+
+	Time Complexity-> O(1) / constant time for CRUD operations and search
+
+	Operations--->
+
+	1. ADD ITEM
+		POST api-> "<HOST>/item"
+		with body JSON 
+				{
+					"title":"classic nike running",
+					"category": "shoes",
+					"brand":"Nike",
+					"color":"black",
+					"size":"6"
+				}
+
+		POST request to add item. 
+		Expected response->
+				{
+					"id": "d45e805d-407c-46f1-8c06-3b8b64969294",
+					"title": "classic nike running",
+					"brand": "Nike",
+					"color": "black",
+					"size": "6",
+					"category": "shoes"
+				}
+
+
+	2. DELETE ITEM
+		DELETE api-> "<HOST>/item/{id}"
+	 	DELETE request with path variable of id fetched from item (returned when it was created/added)
+
+
+	3. UPDATE ITEM
+
+		POST api--> "<HOST>/item/{id}"
+		POST request to update using path variable id and request body JSON->
+				{
+					"id": "d45e805d-407c-46f1-8c06-3b8b64969294",
+					"title":"classic nike football",
+					"category": "shirts",
+					"brand":"Nike",
+					"color":"red",
+					"size":"L"
+				}
+
+
+					EXPECTED RESPONSE->>
+				{					{
+				    "id": "d45e805d-407c-46f1-8c06-3b8b64969294",
+				    "title": "classic nike football",
+				    "brand": "Nike",
+				    "color": "red",
+				    "size": "L",
+				    "category": "shirts"
+				}
+
+
+
+	4. GET ITEM FROM ID
+		 GET api-> "<HOST>/item/{id}"
+		 with GET request.
+
+		 Expected response-> 
+		 		{
+				    "id": "bc762700-b189-4a5f-92dd-ee842f48993f",
+				    "title": "classic nike football",
+				    "brand": "Nike",
+				    "color": "red",
+				    "size": "L",
+				    "category": "shirts"
+				}
+
+
+
+	5. SEARCH ITEM USING KEYWORD
+
+		GET api->> "<HOST>/item/search/{SKU}/{KEYWORD}"
+		with GET request
+		 	example-> 
+		 				/item/search/Brand/Nike
+		 				/item/search/Title/Classic
+		 				/item/search/Color/Red
+
+		 	expected response for all the above apis would be-> 
+		 	[
+			    {
+			        "id": "f45e805d-407c-46f1-8c06-3b8b64969875",
+			        "title": "fancy nike running",
+			        "brand": "Nike",
+			        "color": "red",
+			        "size": "L",
+			        "category": "shoes"
+			    },
+			    {
+			        "id": "d45e805d-407c-46f1-8c06-3b8b64969294",
+			        "title": "classic nike football",
+			        "brand": "Nike",
+			        "color": "red",
+			        "size": "L",
+			        "category": "shirts"
+			    }
+			 ]
